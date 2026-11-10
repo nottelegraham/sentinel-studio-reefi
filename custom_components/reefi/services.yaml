@@ -1,0 +1,56 @@
+save_schedule:
+  fields:
+    entry_id: {example: "01J..."}
+    points: {example: '[{"index": 1, "hr": 11, "min": 0, "master": 90}]'}
+    profiles: {example: '[{"index": 12, "ch": [0,0,0,40,20,0,0,0,0]}]'}
+    active_points: {example: 7}
+quick_look:
+  fields:
+    entry_id: {example: "01J..."}
+    profile: {required: true, example: 0, selector: {number: {min: 0, max: 19}}}
+    minutes: {example: 30, selector: {number: {min: 1, max: 480, unit_of_measurement: min}}}
+resume_schedule:
+  fields:
+    entry_id: {example: "01J..."}
+sync_clock:
+  fields:
+    entry_id: {example: "01J..."}
+device_action:
+  fields:
+    entry_id: {example: "01J..."}
+    action:
+      required: true
+      selector:
+        select:
+          options: [demo, restart, recalibrate_fan, display_toggle, cooldown, led_start_test_on, led_start_test_off]
+set_seasonal:
+  fields:
+    entry_id: {example: "01J..."}
+    sunrise_minutes: {required: true, example: 67}
+    sunset_minutes: {required: true, example: 74}
+    hemisphere: {required: true, selector: {select: {options: [Northern, Southern]}}}
+    ignore_dst: {selector: {boolean: {}}}
+    schedule_is_summer: {selector: {boolean: {}}}
+set_power_check:
+  fields:
+    entry_id: {example: "01J..."}
+    enabled: {required: true, selector: {boolean: {}}}
+    ip: {example: "192.168.4.1"}
+seasonal_configure:
+  fields:
+    entry_id: {example: "01J..."}
+    enabled: {selector: {boolean: {}}}
+    table: {example: '[["06-21", 100, 100], ["12-20", 66, 78]]'}
+    midday: {example: "15:50"}
+    modes: {example: '{"6": "time"}'}
+seasonal_capture_base:
+  fields:
+    entry_id: {example: "01J..."}
+seasonal_apply:
+  fields:
+    entry_id: {example: "01J..."}
+set_point_label:
+  fields:
+    entry_id: {example: "01J..."}
+    index: {required: true, example: 2}
+    label: {example: "Midday high"}

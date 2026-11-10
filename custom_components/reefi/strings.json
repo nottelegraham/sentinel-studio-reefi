@@ -1,0 +1,13 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add a ReeFi light",
+        "description": "Enter the light's IP address, for example 192.168.1.50.",
+        "data": { "host": "IP address" }
+      }
+    },
+    "error": { "cannot_connect": "No ReeFi light answered at that address. Check the IP and that the light is on your network." },
+    "abort": { "already_configured": "This light is already added. Its address was updated." }
+  }
+}

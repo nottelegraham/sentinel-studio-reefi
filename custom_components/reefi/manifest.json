@@ -1,0 +1,12 @@
+{
+  "domain": "reefi",
+  "name": "Sentinel Studio for ReeFi",
+  "codeowners": ["@nottelegraham"],
+  "config_flow": true,
+  "dependencies": ["frontend", "http", "websocket_api"],
+  "documentation": "https://github.com/nottelegraham/sentinel-studio-reefi",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/nottelegraham/sentinel-studio-reefi/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}
