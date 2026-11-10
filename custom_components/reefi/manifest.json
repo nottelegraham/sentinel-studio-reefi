@@ -1,6 +1,7 @@
 {
   "domain": "reefi",
   "name": "Sentinel Studio for ReeFi",
+  "categories": ["lighting.lighting_systems", "pets"],
   "codeowners": ["@nottelegraham"],
   "config_flow": true,
   "dependencies": ["frontend", "http", "websocket_api"],
