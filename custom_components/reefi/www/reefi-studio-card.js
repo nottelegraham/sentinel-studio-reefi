@@ -1,5 +1,6 @@
 /* Sentinel Studio for ReeFi: Home Assistant card. Pairs with the "reefi" integration. */
-const CARD_VERSION = '0.1.0';
+const CARD_VERSION = '0.1.1';
+const PICK_KEY = 'reefi-studio-light';
 const CH = [
   { label: '395 nm', color: '#aa83cb' }, { label: '420 nm', color: '#785cb4' },
   { label: 'Violet', color: '#8e00ff' }, { label: 'R Blue', color: '#3502ff' },
@@ -168,6 +169,9 @@ input[type=range]{accent-color:var(--sun);width:100%}
 .toast{font-size:12.5px;padding:8px 12px;border-radius:8px;background:var(--panel-2)}
 .toast.err{color:var(--bad)}
 .empty{padding:28px;text-align:center;color:var(--muted)}
+.pick{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.pick .chip{font-size:14px;padding:6px 14px}
+.empty .hint{font-size:12px;margin-top:12px}
 .badge.on{background:var(--ok)}
 .seahead{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start}
 .seahead .grow{flex:1;min-width:240px}
@@ -227,6 +231,7 @@ const MARKUP = `
   <header class="top">
     <div class="brand">Sentinel <b>Studio</b></div>
     <div class="dev" id="dev"></div>
+    <button class="chip" id="switchLight" hidden>Switch light</button>
     <div class="spacer"></div>
     <span class="pill" id="statusPill"><i></i><span id="statusText">Connecting</span></span>
     <div class="clock" id="clock">--:--</div>
@@ -407,6 +412,7 @@ function createStudio(root, api) {
     if (!S.profiles[S.selProf]) S.selProf = 0;
   }
   function setData(d) {
+    if (S.d && S.d.entry_id !== d.entry_id) { S.d = null; S.orig = null; S.sea = null; S.sel = 0; S.selProf = 0; } // switched lights
     const first = !S.d;
     S.d = d;
     if (!S.orig || (!editCount() && !S.drag)) load(d);
@@ -415,9 +421,20 @@ function createStudio(root, api) {
     $('empty').hidden = true; showTab(S.tab, true);
     S.drag ? renderNow() : renderAll();
   }
-  function setError(msg) {
+  function setError(msg, fatal) {
+    if (fatal) { S.d = null; S.orig = null; S.sea = null; showTab(S.tab, true); }
     if (!S.d) { $('empty').hidden = false; $('empty').textContent = msg; }
     $('statusPill').className = 'pill bad'; $('statusText').textContent = 'Light not answering';
+  }
+  function choose(lights, pick) { // more than one light and the card config doesn't name one
+    S.d = null; S.orig = null; S.sea = null; S.sel = 0; S.selProf = 0; showTab(S.tab, true);
+    $('statusPill').className = 'pill'; $('statusText').textContent = 'Pick a light';
+    $('dev').textContent = ''; $('switchLight').hidden = true;
+    $('empty').hidden = false;
+    $('empty').innerHTML = `<div>More than one ReeFi light is set up. Which one should this card show?</div>
+      <div class="pick">${lights.map(l => `<button class="chip" data-e="${esc(l.entry_id)}">${esc(l.title)} <span class="num">${esc(l.host)}</span></button>`).join('')}</div>
+      <div class="hint">This browser remembers the choice. To fix a card to one light, add <code>light: ${esc(lights[0].title)}</code> to its YAML.</div>`;
+    $('empty').querySelectorAll('.pick .chip').forEach(b => b.addEventListener('click', () => { $('empty').textContent = 'Reading the light…'; pick(b.dataset.e); }));
   }
   function editCount() {
     if (!S.orig) return 0; const o = JSON.parse(S.orig); let n = 0;
@@ -437,6 +454,7 @@ function createStudio(root, api) {
     const d = S.d; if (!d) return;
     $('clock').textContent = fmtT(nowMin());
     $('dev').textContent = `${set().ModelType || 'Uno'} · ${d.title} · fw ${d.now.Ver || '?'}`;
+    $('switchLight').hidden = !(d.light_count > 1 && api.canSwitch());
     const c = d.now.nowch, o = ovr(), P = S.points, [lc, drift] = clockDrift();
     $('nowW').textContent = Math.round(d.watts);
     const ap = avgPct(c); $('nowPct').textContent = ap.toFixed(ap < 10 ? 1 : 0);
@@ -652,6 +670,7 @@ function createStudio(root, api) {
     return out;
   }
   function renderChecks() {
+    if (!S.d) return;
     const cs = checks(), nw = cs.filter(c => c.sev === 'warn').length;
     $('setBadge').hidden = !nw; $('setBadge').textContent = nw;
     $('checks').innerHTML = cs.map(c => `<li class="chk ${c.sev}"><span class="sev"></span><div class="c"><b>${esc(c.t)}</b><p>${esc(c.d)}</p>${c.fix || c.sel != null ? `<div class="acts">${c.fix ? `<button class="btn pri" data-fix="${c.id}">${c.fix}</button>` : ''}${c.sel != null ? `<button class="btn" data-sel="${c.sel}">Show point</button>` : ''}</div>` : ''}</div></li>`).join('');
@@ -884,11 +903,22 @@ function createStudio(root, api) {
   const ro = new ResizeObserver(() => { renderChart(); if (S.tab === 'seasons') renderSeasons(); }); ro.observe($('chartwrap')); ro.observe($('p-seasons'));
   const tick = setInterval(renderNow, 1000);
   const slow = setInterval(() => { if (!S.drag) { renderChart(); renderChecks(); } }, 30000);
-  return { setData, setError, destroy() { clearInterval(tick); clearInterval(slow); ro.disconnect(); } };
+  $('switchLight').addEventListener('click', () => api.switchLight());
+  return { setData, setError, choose, destroy() { clearInterval(tick); clearInterval(slow); ro.disconnect(); } };
 }
 
+function loadPick() { try { return localStorage.getItem(PICK_KEY) || null; } catch (e) { return null; } }
+function savePick(v) { try { if (v) localStorage.setItem(PICK_KEY, v); else localStorage.removeItem(PICK_KEY); } catch (e) { /* storage blocked */ } }
+
 class ReefiStudioCard extends HTMLElement {
-  setConfig(config) { this._config = config || {}; }
+  setConfig(config) {
+    const c = config || {};
+    if (c.entry_id != null && typeof c.entry_id !== 'string') throw new Error('entry_id must be text, the light\'s config entry ID.');
+    if (c.light != null && typeof c.light !== 'string' && typeof c.light !== 'number') throw new Error('light must be the light\'s name or IP address as shown in Devices & services.');
+    const changed = this._config && (this._config.entry_id !== c.entry_id || this._config.light !== c.light);
+    this._config = c;
+    if (changed && this._studio) { this._entry = null; this._fetch(); }
+  }
   set hass(hass) { const first = !this._hass; this._hass = hass; if (first) this._init(); }
   get hass() { return this._hass; }
   getCardSize() { return 16; }
@@ -896,23 +926,59 @@ class ReefiStudioCard extends HTMLElement {
   static getStubConfig() { return {}; }
   connectedCallback() { if (this._studio && !this._poll) { this._fetch(); this._startPoll(); } }
   disconnectedCallback() { clearInterval(this._poll); this._poll = null; }
+  _configured() { return !!(this._config && (this._config.entry_id || (this._config.light != null && this._config.light !== ''))); }
   _init() {
-    ensureFonts();
-    const root = this.attachShadow({ mode: 'open' });
-    root.innerHTML = `<style>${STYLE}</style>${MARKUP}`;
-    const api = {
-      call: (service, data = {}) => this._hass.callService('reefi', service, { ...data, ...(this._entry ? { entry_id: this._entry } : {}) }),
-      refresh: () => this._fetch(),
-    };
-    this._studio = createStudio(root, api);
+    const root = this.shadowRoot || this.attachShadow({ mode: 'open' });
+    try {
+      ensureFonts();
+      root.innerHTML = `<style>${STYLE}</style>${MARKUP}`;
+      const api = {
+        call: (service, data = {}) => this._hass.callService('reefi', service, { ...data, ...(this._entry ? { entry_id: this._entry } : {}) }),
+        refresh: () => this._fetch(),
+        canSwitch: () => !this._configured(),
+        switchLight: () => { savePick(null); this._entry = null; this._fetch(); },
+      };
+      this._studio = createStudio(root, api);
+    } catch (e) {
+      console.error('REEFI-STUDIO failed to start', e);
+      root.innerHTML = `<ha-card><div style="padding:16px;color:var(--error-color,#db4437)">Sentinel Studio could not start: ${String((e && e.message) || e).replace(/</g, '&lt;')}. Please report this with the browser console log.</div></ha-card>`;
+      return;
+    }
     this._fetch(); this._startPoll();
   }
   _startPoll() { clearInterval(this._poll); this._poll = setInterval(() => this._fetch(), 10000); }
   async _fetch() {
+    if (!this._studio || this._picking) return;
+    const msg = { type: 'reefi/data' }, cfg = this._config || {}, picked = this._configured() ? null : loadPick();
+    if (cfg.entry_id) msg.entry_id = cfg.entry_id;
+    else if (cfg.light != null && cfg.light !== '') msg.light = String(cfg.light);
+    else if (this._entry || picked) msg.entry_id = this._entry || picked;
+    let d;
     try {
-      const msg = { type: 'reefi/data' }; if (this._config && this._config.entry_id) msg.entry_id = this._config.entry_id;
-      const d = await this._hass.callWS(msg); this._entry = d.entry_id; this._studio.setData(d);
-    } catch (e) { this._studio.setError((e && e.message) || 'Could not read the ReeFi integration.'); }
+      d = await this._hass.callWS(msg);
+    } catch (e) {
+      const code = e && e.code;
+      if (code === 'choose_light' || (code === 'not_found' && !this._configured() && msg.entry_id)) {
+        savePick(null); this._entry = null; return this._choose();
+      }
+      this._studio.setError((e && e.message) || 'Could not read the ReeFi integration.');
+      return;
+    }
+    this._entry = d.entry_id;
+    try { this._studio.setData(d); } catch (e) {
+      console.error('REEFI-STUDIO could not show data from the light', e, d);
+      this._studio.setError(`Could not show this light's data (${(e && e.message) || e}). Model or firmware may not be supported yet.`, true);
+    }
+  }
+  async _choose() {
+    this._picking = true;
+    try {
+      const r = await this._hass.callWS({ type: 'reefi/lights' });
+      this._studio.choose(r.lights, eid => { savePick(eid); this._entry = eid; this._picking = false; this._fetch(); });
+    } catch (e) {
+      this._picking = false;
+      this._studio.setError((e && e.message) || 'Could not list ReeFi lights.');
+    }
   }
 }
 if (!customElements.get('reefi-studio-card')) {
