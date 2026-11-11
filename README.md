@@ -23,7 +23,20 @@ Make a new dashboard (or view), set the view type to **Panel (single card)**, ad
 type: custom:reefi-studio-card
 ```
 
-The integration serves the card itself; there is no resource to add. If the card shows "Custom element doesn't exist", hard-refresh the browser.
+The integration serves the card itself; there is no resource to add. If you added one by hand, remove it under Settings > Dashboards > Resources. If the card shows "Custom element doesn't exist", hard-refresh the browser.
+
+### More than one light
+With two or more lights set up, the card asks which one to show and the browser remembers the choice (**Switch light** in the header changes it). To fix a card to one light, name it by its title in Devices & services or by its IP address:
+
+```yaml
+type: custom:reefi-studio-card
+light: ReeFi FF265
+```
+
+Use one card per light.
+
+### If the card shows "Configuration error"
+Home Assistant shows the details only in edit mode. Open the dashboard editor to read the full message, and check the browser console for lines starting with `REEFI-STUDIO`. Include both when reporting a problem.
 
 ## First test, in this order
 1. **Watch**: the Today tab should show live watts matching the light's own page.
