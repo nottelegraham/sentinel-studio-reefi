@@ -23,7 +23,7 @@ Make a new dashboard (or view), set the view type to **Panel (single card)**, ad
 type: custom:reefi-studio-card
 ```
 
-The integration serves the card itself; there is no resource to add. If you added one by hand, remove it under Settings > Dashboards > Resources. If the card shows "Custom element doesn't exist", hard-refresh the browser.
+The integration serves the card and adds it to your dashboard resources itself (Settings > Dashboards > Resources shows `/reefi_static/reefi-studio-card.js?v=…`). Don't add or edit that entry by hand; each update keeps it current. If the card shows "Custom element doesn't exist" or "Configuration error", hard-refresh the browser, or fully close and reopen the Home Assistant phone app.
 
 ### More than one light
 With two or more lights set up, the card asks which one to show and the browser remembers the choice (**Switch light** in the header changes it). To fix a card to one light, name it by its title in Devices & services or by its IP address:
