@@ -1,5 +1,5 @@
 /* Sentinel Studio for ReeFi: Home Assistant card. Pairs with the "reefi" integration. */
-const CARD_VERSION = '0.1.2';
+const CARD_VERSION = '0.1.3';
 const PICK_KEY = 'reefi-studio-light';
 const CH = [
   { label: '395 nm', color: '#aa83cb' }, { label: '420 nm', color: '#785cb4' },
@@ -985,5 +985,8 @@ if (!customElements.get('reefi-studio-card')) {
   customElements.define('reefi-studio-card', ReefiStudioCard);
   window.customCards = window.customCards || [];
   window.customCards.push({ type: 'reefi-studio-card', name: 'Sentinel Studio for ReeFi', description: 'Schedule, profiles and live output for a ReeFi LED light.' });
+  ReefiStudioCard.version = CARD_VERSION;
   console.info(`%c REEFI-STUDIO %c ${CARD_VERSION} `, 'background:#e9a83a;color:#1b1305;font-weight:700', '');
+} else if (customElements.get('reefi-studio-card').version !== CARD_VERSION) {
+  console.warn(`REEFI-STUDIO ${CARD_VERSION} is installed, but version ${customElements.get('reefi-studio-card').version || 'unknown (older)'} loaded first. Remove any hand-added reefi-studio-card.js resource and refresh.`);
 }
