@@ -1,5 +1,5 @@
 /* Sentinel Studio for ReeFi: Home Assistant card. Pairs with the "reefi" integration. */
-const CARD_VERSION = '0.1.3';
+const CARD_VERSION = '0.1.4';
 const PICK_KEY = 'reefi-studio-light';
 const CH = [
   { label: '395 nm', color: '#aa83cb' }, { label: '420 nm', color: '#785cb4' },
@@ -60,6 +60,7 @@ a{color:var(--sun)}
 .brand{font:700 24px/1 var(--display)}
 .brand b{color:var(--sun)}
 .dev{color:var(--muted);font-size:13px}
+.ver{color:var(--faint);font-size:11.5px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
 .spacer{flex:1}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;border:1px solid var(--line-2);font-size:12px;white-space:nowrap}
 .pill i{width:7px;height:7px;border-radius:50%;background:var(--ok)}
@@ -235,6 +236,7 @@ const MARKUP = `
     <div class="spacer"></div>
     <span class="pill" id="statusPill"><i></i><span id="statusText">Connecting</span></span>
     <div class="clock" id="clock">--:--</div>
+    <span class="ver" title="Sentinel Studio version">v${CARD_VERSION}</span>
   </header>
   <nav class="tabs" role="tablist">
     <button class="tab" role="tab" data-tab="today" aria-selected="true">Today</button>

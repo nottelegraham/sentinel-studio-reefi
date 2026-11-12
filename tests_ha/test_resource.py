@@ -11,7 +11,7 @@ async def test_fresh(hass, hass_ws_client):
     assert await async_setup_component(hass, "lovelace", {})
     assert await async_setup_component(hass, "reefi", {})
     await hass.async_start(); await hass.async_block_till_done()
-    assert await _urls(hass, await hass_ws_client(hass)) == [("/reefi_static/reefi-studio-card.js?v=0.1.3", "module")]
+    assert await _urls(hass, await hass_ws_client(hass)) == [("/reefi_static/reefi-studio-card.js?v=0.1.4", "module")]
 
 async def test_hand_added_and_stale_copy(hass, hass_ws_client):
     assert await async_setup_component(hass, "lovelace", {})
@@ -24,9 +24,9 @@ async def test_hand_added_and_stale_copy(hass, hass_ws_client):
     assert await async_setup_component(hass, "reefi", {})
     await hass.async_start(); await hass.async_block_till_done()
     got = await _urls(hass, ws)
-    assert sorted(got) == sorted([("/reefi_static/reefi-studio-card.js?v=0.1.3", "module"),
+    assert sorted(got) == sorted([("/reefi_static/reefi-studio-card.js?v=0.1.4", "module"),
                                   ("/hacsfiles/other-card/other-card.js", "module")]), got
     # restart again: nothing changes, no duplicates
     from custom_components.reefi.lovelace_resource import _ensure
-    await _ensure(hass, "/reefi_static/reefi-studio-card.js", "/reefi_static/reefi-studio-card.js?v=0.1.3", ())
+    await _ensure(hass, "/reefi_static/reefi-studio-card.js", "/reefi_static/reefi-studio-card.js?v=0.1.4", ())
     assert len(await _urls(hass, ws)) == 2
