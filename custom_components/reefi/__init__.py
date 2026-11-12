@@ -18,6 +18,7 @@ from homeassistant.helpers.storage import Store
 from . import websocket as reefi_ws
 from .api import ReefiApi, ReefiError
 from .const import CARD_VERSION, DEVICE_ACTIONS, DOMAIN, STATIC_URL
+from .lovelace_resource import async_register_resource
 from .coordinator import ReefiCoordinator
 from .seasonal import Seasonal
 
@@ -89,7 +90,10 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     hass.data.setdefault(DOMAIN, {})
     await hass.http.async_register_static_paths(
         [StaticPathConfig(STATIC_URL, str(Path(__file__).parent / "www"), False)])
-    add_extra_js_url(hass, f"{STATIC_URL}/reefi-studio-card.js?v={CARD_VERSION}")
+    card = f"{STATIC_URL}/reefi-studio-card.js?v={CARD_VERSION}"
+    add_extra_js_url(hass, card)
+    # Phone apps cache the start page; dashboard resources are always fetched fresh.
+    async_register_resource(hass, f"{STATIC_URL}/reefi-studio-card.js", card)
     reefi_ws.async_register(hass)
 
     async def handle(call: ServiceCall) -> None:

@@ -1,5 +1,5 @@
 /* Sentinel Studio for ReeFi: Home Assistant card. Pairs with the "reefi" integration. */
-const CARD_VERSION = '0.1.1';
+const CARD_VERSION = '0.1.2';
 const PICK_KEY = 'reefi-studio-light';
 const CH = [
   { label: '395 nm', color: '#aa83cb' }, { label: '420 nm', color: '#785cb4' },

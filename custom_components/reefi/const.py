@@ -1,6 +1,6 @@
 """Constants for Sentinel Studio for ReeFi."""
 DOMAIN = "reefi"
-CARD_VERSION = "0.1.1"
+CARD_VERSION = "0.1.2"
 STATIC_URL = "/reefi_static"
 
 # cfg channel order: 395, 420, violet, royal blue, blue, lime, amber, warm white, cool white
