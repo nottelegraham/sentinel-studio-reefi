@@ -4,10 +4,204 @@
       "user": {
         "title": "Add a ReeFi light",
         "description": "Enter the light's IP address, for example 192.168.1.50.",
-        "data": { "host": "IP address" }
+        "data": {
+          "host": "IP address"
+        }
       }
     },
-    "error": { "cannot_connect": "No ReeFi light answered at that address. Check the IP and that the light is on your network." },
-    "abort": { "already_configured": "This light is already added. Its address was updated." }
+    "error": {
+      "cannot_connect": "No ReeFi light answered at that address. Check the IP and that the light is on your network."
+    },
+    "abort": {
+      "already_configured": "This light is already added. Its address was updated."
+    }
+  },
+  "services": {
+    "save_schedule": {
+      "name": "Save schedule",
+      "description": "Changes schedule points and profiles and saves the full settings to the light, as the light's own Save to Unit button does. Fields left out keep their current values.",
+      "fields": {
+        "entry_id": {
+          "name": "Light",
+          "description": "Config entry ID of the light. Needed only when more than one ReeFi light is set up."
+        },
+        "points": {
+          "name": "Points",
+          "description": "List of points to change. Each needs index (0–19) and may set name, hr, min, rate (transition minutes), pindex (profile index), master (brightness %) and seasonal (0 or 1)."
+        },
+        "profiles": {
+          "name": "Profiles",
+          "description": "List of profiles to change. Each needs index (0–19) and may set name and ch (nine channel levels, 0–1023)."
+        },
+        "active_points": {
+          "name": "Active points",
+          "description": "Number of schedule points in use (1–20)."
+        }
+      }
+    },
+    "quick_look": {
+      "name": "Quick look",
+      "description": "Shows a profile's levels on the light for a set time, then returns to the schedule.",
+      "fields": {
+        "entry_id": {
+          "name": "Light",
+          "description": "Config entry ID of the light. Needed only when more than one ReeFi light is set up."
+        },
+        "profile": {
+          "name": "Profile",
+          "description": "Index of the profile to show (0–19)."
+        },
+        "minutes": {
+          "name": "Minutes",
+          "description": "How long to hold it (1–480)."
+        }
+      }
+    },
+    "resume_schedule": {
+      "name": "Resume schedule",
+      "description": "Ends a quick look or manual levels and returns the light to its schedule.",
+      "fields": {
+        "entry_id": {
+          "name": "Light",
+          "description": "Config entry ID of the light. Needed only when more than one ReeFi light is set up."
+        }
+      }
+    },
+    "sync_clock": {
+      "name": "Sync clock",
+      "description": "Sets the light's date and time from Home Assistant.",
+      "fields": {
+        "entry_id": {
+          "name": "Light",
+          "description": "Config entry ID of the light. Needed only when more than one ReeFi light is set up."
+        }
+      }
+    },
+    "device_action": {
+      "name": "Device action",
+      "description": "Runs one of the light's own system functions.",
+      "fields": {
+        "entry_id": {
+          "name": "Light",
+          "description": "Config entry ID of the light. Needed only when more than one ReeFi light is set up."
+        },
+        "action": {
+          "name": "Action",
+          "description": "demo, restart, recalibrate_fan, display_toggle (display on/off), cooldown, led_start_test_on or led_start_test_off."
+        }
+      }
+    },
+    "set_seasonal": {
+      "name": "Set light's seasonal shift",
+      "description": "Sets the light's own seasonal feature, which shifts sunrise and sunset through the year. Separate from Home Assistant's Seasons.",
+      "fields": {
+        "entry_id": {
+          "name": "Light",
+          "description": "Config entry ID of the light. Needed only when more than one ReeFi light is set up."
+        },
+        "sunrise_minutes": {
+          "name": "Sunrise shift",
+          "description": "Minutes sunrise moves between summer and winter (0–240)."
+        },
+        "sunset_minutes": {
+          "name": "Sunset shift",
+          "description": "Minutes sunset moves between summer and winter (0–240)."
+        },
+        "hemisphere": {
+          "name": "Hemisphere",
+          "description": "Northern or Southern."
+        },
+        "ignore_dst": {
+          "name": "Ignore daylight saving",
+          "description": "Leave the shift unaffected by daylight saving time."
+        },
+        "schedule_is_summer": {
+          "name": "Schedule is for summer",
+          "description": "On if the current schedule is the summer solstice schedule, off if it is the winter one."
+        }
+      }
+    },
+    "set_power_check": {
+      "name": "Set power outage check",
+      "description": "Turns the light's power outage check on or off.",
+      "fields": {
+        "entry_id": {
+          "name": "Light",
+          "description": "Config entry ID of the light. Needed only when more than one ReeFi light is set up."
+        },
+        "enabled": {
+          "name": "Enabled",
+          "description": "Turn the check on or off."
+        },
+        "ip": {
+          "name": "Device to ping",
+          "description": "IP address the light pings to detect an outage."
+        }
+      }
+    },
+    "seasonal_configure": {
+      "name": "Configure Seasons",
+      "description": "Changes Home Assistant's GHL-style Seasons settings for the light.",
+      "fields": {
+        "entry_id": {
+          "name": "Light",
+          "description": "Config entry ID of the light. Needed only when more than one ReeFi light is set up."
+        },
+        "enabled": {
+          "name": "Enabled",
+          "description": "Turn Seasons on or off. Turning it on the first time stores the current schedule as the longest day."
+        },
+        "table": {
+          "name": "Table",
+          "description": "Rows of [\"MM-DD\", brightness %, day length %], 2 to 48 rows, as percentages of the longest day."
+        },
+        "midday": {
+          "name": "Midday",
+          "description": "Time point times are squeezed toward, as HH:MM (24-hour)."
+        },
+        "modes": {
+          "name": "Point modes",
+          "description": "Per-point mode by point index: both (time and brightness), time (time only) or fixed."
+        }
+      }
+    },
+    "seasonal_capture_base": {
+      "name": "Store longest day",
+      "description": "Stores the light's current schedule as the longest-day schedule Seasons works from.",
+      "fields": {
+        "entry_id": {
+          "name": "Light",
+          "description": "Config entry ID of the light. Needed only when more than one ReeFi light is set up."
+        }
+      }
+    },
+    "seasonal_apply": {
+      "name": "Apply Seasons now",
+      "description": "Writes today's seasonal schedule to the light now instead of waiting for 12:05 AM.",
+      "fields": {
+        "entry_id": {
+          "name": "Light",
+          "description": "Config entry ID of the light. Needed only when more than one ReeFi light is set up."
+        }
+      }
+    },
+    "set_point_label": {
+      "name": "Set point label",
+      "description": "Sets the label the card shows for a schedule point. Stored in Home Assistant, not on the light.",
+      "fields": {
+        "entry_id": {
+          "name": "Light",
+          "description": "Config entry ID of the light. Needed only when more than one ReeFi light is set up."
+        },
+        "index": {
+          "name": "Point",
+          "description": "Point index (0–19)."
+        },
+        "label": {
+          "name": "Label",
+          "description": "Up to 24 characters. Leave empty to show the light's own name."
+        }
+      }
+    }
   }
 }

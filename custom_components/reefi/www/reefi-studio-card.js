@@ -1,5 +1,5 @@
 /* Sentinel Studio for ReeFi: Home Assistant card. Pairs with the "reefi" integration. */
-const CARD_VERSION = '0.1.4';
+const CARD_VERSION = '0.1.5';
 const PICK_KEY = 'reefi-studio-light';
 const CH = [
   { label: '395 nm', color: '#aa83cb' }, { label: '420 nm', color: '#785cb4' },
@@ -23,14 +23,6 @@ function reefTable(key, dates) { // day length vs longest day; noon sun angle (s
   return dates.map(md => { const n = doy(md); return [md, Math.round(sun(n) / mB * 100), Math.round(len(n) / mL * 100)]; });
 }
 
-function ensureFonts() {
-  if (document.getElementById('reefi-fonts')) return;
-  const l = document.createElement('link');
-  l.id = 'reefi-fonts'; l.rel = 'stylesheet';
-  l.href = 'https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap';
-  document.head.appendChild(l);
-}
-
 const STYLE = `
 :host{
   --panel:var(--card-background-color,#111922); --panel-2:var(--secondary-background-color,#17212c);
@@ -39,9 +31,9 @@ const STYLE = `
   --sun:var(--reefi-accent,#e9a83a); --sun-ink:#1b1305; --sun-soft:rgba(233,168,58,.16);
   --ok:var(--success-color,#4cc38a); --warn:var(--warning-color,#e8a33d); --info:var(--info-color,#6aa7e8); --bad:var(--error-color,#ef6b5e);
   --grid:rgba(127,140,155,.16); --chart-bg:var(--secondary-background-color,#0d141c);
-  --display:"Barlow Semi Condensed","Arial Narrow",var(--ha-font-family-body,Roboto),sans-serif;
+  --display:"Arial Narrow",var(--ha-font-family-body,Roboto),sans-serif;
   --body:var(--ha-font-family-body,var(--paper-font-body1_-_font-family,Roboto,system-ui,sans-serif));
-  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
   display:block}
 *{box-sizing:border-box} [hidden]{display:none!important}
 ha-card{overflow:visible}
@@ -932,7 +924,6 @@ class ReefiStudioCard extends HTMLElement {
   _init() {
     const root = this.shadowRoot || this.attachShadow({ mode: 'open' });
     try {
-      ensureFonts();
       root.innerHTML = `<style>${STYLE}</style>${MARKUP}`;
       const api = {
         call: (service, data = {}) => this._hass.callService('reefi', service, { ...data, ...(this._entry ? { entry_id: this._entry } : {}) }),

@@ -2,7 +2,7 @@
 
 Local control of a ReeFi Uno 2.x Pro LED from Home Assistant: a custom integration (`reefi`) plus the Sentinel Studio dashboard card. Everything runs on your network; nothing goes to the cloud.
 
-Not made by or affiliated with ReeFi. Tested against firmware 5.43.
+Not made by or affiliated with ReeFi. Tested against firmware 5.43. Requires Home Assistant 2024.12 or newer.
 
 [![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=nottelegraham&repository=sentinel-studio-reefi&category=integration)
 
@@ -46,7 +46,7 @@ Home Assistant shows the details only in edit mode. Open the dashboard editor to
 ## What it adds
 - Sensors: power (W), channel average, mode, moon illumination, and one per channel (%).
 - Actions: `reefi.save_schedule`, `reefi.quick_look`, `reefi.resume_schedule`, `reefi.sync_clock`, `reefi.set_seasonal`, `reefi.set_power_check`, `reefi.device_action` (demo, restart, recalibrate_fan, display_toggle, cooldown, LED start test), `reefi.set_point_label`.
-- Card tabs: Today (live output, quick looks, light curve, point editor, daily totals), Profiles, Settings (checks, simulation, date/time, seasonal, power outage check, system tools, links to the light's firmware and Wi-Fi pages).
+- Card tabs: Today (live output, quick looks, light curve, point editor, daily totals), Seasons (see below), Settings (checks, simulation, date/time, the light's own seasonal shift, power outage check, system tools, links to the light's firmware and Wi-Fi pages).
 
 ## Seasons
 GHL-style seasonal lighting run by Home Assistant. The light's own seasonal feature only shifts sunrise and sunset; this also scales brightness.

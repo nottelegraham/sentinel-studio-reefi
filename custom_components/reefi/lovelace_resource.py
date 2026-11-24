@@ -24,7 +24,7 @@ def _collection(hass: HomeAssistant):
     return res if res is not None and hasattr(res, "async_create_item") else None
 
 
-async def _ensure(hass: HomeAssistant, base: str, url: str, also: tuple[str, ...]) -> None:
+async def _ensure(hass: HomeAssistant, base: str, url: str) -> None:
     res = _collection(hass)
     if res is None:  # YAML resource mode or lovelace not loaded: extra JS URL still covers browsers
         _LOGGER.debug("Lovelace storage resources unavailable; not registering %s", base)
@@ -32,26 +32,30 @@ async def _ensure(hass: HomeAssistant, base: str, url: str, also: tuple[str, ...
     if not res.loaded:
         await res.async_load()
         res.loaded = True
-    # Match any resource that loads a copy of this file (hand-added, /local/ copies, old
-    # versions): point the first at the served card, delete the rest, so no stale copy
-    # can register the element before the current one.
-    names = {base.rsplit("/", 1)[-1], *also}
-    matches = [i for i in res.async_items()
-               if i.get("url", "").split("?")[0].rsplit("/", 1)[-1] in names]
-    if matches:
-        keep, *extra = matches
+    # Only touch the entry served from our own static path. Resources the user added
+    # (hand-added, /local/ copies, other paths) are left alone; we just warn about them.
+    path = lambda i: i.get("url", "").split("?")[0]
+    ours = [i for i in res.async_items() if path(i) == base]
+    name = base.rsplit("/", 1)[-1]
+    others = [i["url"] for i in res.async_items()
+              if path(i) != base and path(i).rsplit("/", 1)[-1] == name]
+    if others:
+        _LOGGER.warning("Other dashboard resources also load %s (%s); remove them so only "
+                        "the integration's copy (%s) is loaded", name, ", ".join(others), base)
+    if ours:
+        keep = ours[0]
         if keep.get("url") != url or keep.get("type") != "module":
             await res.async_update_item(keep["id"], {"res_type": "module", "url": url})
-        for item in extra:
-            await res.async_delete_item(item["id"])
+        if len(ours) > 1:
+            _LOGGER.warning("Duplicate dashboard resources for %s; remove the extras", base)
         return
     await res.async_create_item({"res_type": "module", "url": url})
 
 
-def async_register_resource(hass: HomeAssistant, base: str, url: str, also: tuple[str, ...] = ()) -> None:
+def async_register_resource(hass: HomeAssistant, base: str, url: str) -> None:
     async def run(_=None) -> None:
         try:
-            await _ensure(hass, base, url, also)
+            await _ensure(hass, base, url)
         except Exception:  # never block setup over this
             _LOGGER.exception("Could not register dashboard resource %s", base)
 
