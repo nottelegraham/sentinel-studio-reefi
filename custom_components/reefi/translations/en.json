@@ -153,7 +153,7 @@
         },
         "table": {
           "name": "Table",
-          "description": "Rows of [\"MM-DD\", brightness %, day length %], 2 to 48 rows, as percentages of the longest day."
+          "description": "One row per date: the date as MM-DD, then brightness and day length, each as a percent of the longest day. 2 to 48 rows."
         },
         "midday": {
           "name": "Midday",

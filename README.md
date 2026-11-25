@@ -66,4 +66,4 @@ Protocol notes: [PROTOCOL.md](PROTOCOL.md).
 Part of the TelegrahamTested Sentinel tools.
 
 ## License
-Free for personal, hobby and other noncommercial use under the [PolyForm Noncommercial License 1.0.0](LICENSE). Selling this software, devices built with it, or any part of it requires written permission from TelegrahamTested.
+[MIT](LICENSE)
