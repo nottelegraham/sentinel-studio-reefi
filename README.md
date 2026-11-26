@@ -37,7 +37,7 @@ Use one card per light.
 
 ### Icon
 
-The integration adds a ReeFi light icon you can use anywhere Home Assistant takes an icon (dashboard sidebar icon, buttons, tiles): `sentinel:reefi`.
+The integration adds a ReeFi light icon you can use anywhere Home Assistant takes an icon (dashboard sidebar icon, buttons, tiles): `sentinel-studio:reefi`.
 
 ### If the card shows "Configuration error"
 Home Assistant shows the details only in edit mode. Open the dashboard editor to read the full message, and check the browser console for lines starting with `REEFI-STUDIO`. Include both when reporting a problem.

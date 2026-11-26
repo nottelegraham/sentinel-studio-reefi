@@ -1,16 +1,16 @@
 /* Sentinel Studio for ReeFi: Home Assistant card. Pairs with the "reefi" integration. */
-const CARD_VERSION = '0.1.8';
-// Icon "sentinel:reefi" for dashboards, buttons and the sidebar. Shared "sentinel" icon set:
-// other Sentinel integrations add their icons to window.__sentinelIcons.
+const CARD_VERSION = '0.1.9';
+// Icon "sentinel-studio:reefi" for dashboards, buttons and the sidebar. Its own icon set, so it
+// can't collide with other cards' sets; other Sentinel Studio integrations add to window.__sentinelStudioIcons.
 (() => {
-  const icons = (window.__sentinelIcons = window.__sentinelIcons || {});
+  const icons = (window.__sentinelStudioIcons = window.__sentinelStudioIcons || {});
   icons.reefi = { viewBox: '0 0 24 24',
     path: 'M5 2.5h14a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2zM10 4.2a1 1 0 0 0-1 1v1.6a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V5.2a1 1 0 0 0-1-1zM2 19.2c2.5-1.6 5-1.6 7.5 0s5 1.6 7.5 0 3.6-1.2 5-.4V22H2z',
     secondaryPath: 'M5 10h14l3 8.5H2z' };
   window.customIcons = window.customIcons || {};
-  if (!window.customIcons.sentinel) window.customIcons.sentinel = {
-    getIcon: async (name) => window.__sentinelIcons[name] || { path: '' },
-    getIconList: async () => Object.keys(window.__sentinelIcons).map((name) => ({ name })),
+  window.customIcons['sentinel-studio'] = {
+    getIcon: async (name) => window.__sentinelStudioIcons[name] || { path: '' },
+    getIconList: async () => Object.keys(window.__sentinelStudioIcons).map((name) => ({ name })),
   };
 })();
 const PICK_KEY = 'reefi-studio-light';
